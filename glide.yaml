@@ -1,0 +1,3 @@
+package: github.com/whistlinwilly/asciimation
+import:
+- package: github.com/fogleman/gg
