@@ -2,6 +2,10 @@ package font
 
 import (
 	"fmt"
+	"image"
+	_ "image/png"
+	"io/ioutil"
+	"os"
 	"unicode/utf8"
 
 	"github.com/fogleman/gg"
@@ -9,6 +13,14 @@ import (
 
 const H = 72
 const W = 48
+const assetDir = "font/assets/"
+
+type CharacterSet []CharacterItem
+
+type CharacterItem struct {
+	Character string
+	Img       image.Image
+}
 
 func GenerateFontSet(font string) error {
 	max := float64(0)
@@ -19,6 +31,9 @@ func GenerateFontSet(font string) error {
 		dc.SetRGB(0, 0, 0)
 		r, _ := utf8.DecodeRune([]byte{byte(i)})
 		c := string(r)
+		if c == "" {
+			continue
+		}
 		if err := dc.LoadFontFace("/Library/Fonts/"+font+".ttf", 72); err != nil {
 			panic(err)
 		}
@@ -28,8 +43,26 @@ func GenerateFontSet(font string) error {
 		}
 		fmt.Println(w, h)
 		dc.DrawStringAnchored(c, 24, 28, 0.5, 0.5)
-		dc.SavePNG("font/assets/" + c + ".png")
+		dc.SavePNG(assetDir + c + ".png")
 	}
 	fmt.Println(max)
 	return nil
+}
+
+func Characters() CharacterSet {
+	files, _ := ioutil.ReadDir(assetDir)
+	characters := make([]CharacterItem, len(files))
+	for i, f := range files {
+		infile, err := os.Open(assetDir + f.Name())
+		if err != nil {
+			panic(err)
+		}
+		img, _, err := image.Decode(infile)
+		if err != nil {
+			panic(err)
+		}
+		characters[i].Img = img
+		characters[i].Character = f.Name()
+	}
+	return characters
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	//"github.com/whistlinwilly/asciimation/font"
+	"github.com/whistlinwilly/asciimation/font"
 	"github.com/whistlinwilly/asciimation/render"
 )
 
@@ -20,7 +20,8 @@ func init() {
 
 func main() {
 	//font.GenerateFontSet(fontName)
-	console := render.New(render.Default)
+	characters := font.Characters()
+	console := render.New(render.Default, characters)
 	infile, err := os.Open(imageName)
 	if err != nil {
 		panic(err)
